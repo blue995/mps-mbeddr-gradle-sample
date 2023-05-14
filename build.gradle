@@ -1,0 +1,28 @@
+repositories {
+    maven { url 'https://artifacts.itemis.cloud/repository/maven-mps/' }
+}
+
+def mpsVersion = '2021.3.23837.516eb5b'
+def dependenciesDir = 'lib'
+
+configurations {
+    mpsExtensions
+}
+
+dependencies {
+    mpsExtensions "com.mbeddr:mbeddr:${mpsVersion}"
+    mpsExtensions "com.mbeddr:platform:${mpsVersion}"
+
+}
+
+task resolveExtensions(type: Copy, dependsOn: 'cleanExtensions') {
+    dependsOn configurations.mpsExtensions
+    from {
+        configurations.mpsExtensions.resolve().collect { zipTree(it) }
+    }
+    into "${dependenciesDir}"
+}
+
+task cleanExtensions(type: Delete) {
+    delete "${dependenciesDir}"
+}
